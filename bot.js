@@ -61,7 +61,7 @@ client.on('message', async message => {
             queue[currguild].push({
                 title: `${info.title}`,
                 url: `${info.video_url}`,
-                views: `${info.player_response.videoDetails.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} views`,
+                views: `${parseInt(info.player_response.videoDetails.viewCount).toLocaleString('en')} views`,
                 thumbnail: `${info.player_response.videoDetails.thumbnail.thumbnails[3].url}`,
                 author: {
                     name: `${info.author.name}`,
