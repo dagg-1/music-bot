@@ -27,7 +27,7 @@ client.on('message', async message => {
         case "add":
             if (!arguments[0]) return message.channel.send("No URL specified")
             if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) {
-                let result = await searchapi(tokens.YouTube.api_key, {q: arguments.join().replace(/,/gi, " "), type: "video"})
+                let result = await searchapi(tokens.YouTube.api_key, { q: arguments.join().replace(/,/gi, " "), type: "video" })
                 arguments[0] = result.items[0].id.videoId
             }
             let info = await ytdl.getBasicInfo(arguments[0])
@@ -119,6 +119,24 @@ client.on('message', async message => {
                 queueembed.addField(`Position ${forelement}`, element.title)
             })
             message.channel.send(queueembed)
+            break
+        case "remove":
+            if (!queue[0]) return message.channel.send("Nothing is queued")
+            if (!arguments[0]) return message.channel.send("No position specified")
+            if (!queue[arguments[0] - 1]) return message.channel.send("Invalid position")
+            message.channel.send(`Removed ${queue[arguments[0] - 1].title} from the queue`)
+            queue.splice((arguments[0] - 1), 1)
+            break
+        case "skip":
+            if (!dispatch) return message.channel.send("Nothing is playing")
+            if (!queue[1]) return message.channel.send("Nothing else is queued")
+            dispatch.end()
+            break
+        case "stop":
+            await queue.forEach(element => {
+                queue.shift()
+            })
+            dispatch.end()
             break
     }
 })
