@@ -12,7 +12,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
     if (!message.guild) return 
-    if (!message.content.indexOf(prefix)) return
+    if (!message.content.startsWith(prefix)) return
     const arguments = message.content.slice(prefix.length).trim().split(/ +/g)
     const command = arguments.shift().toLowerCase()
 
