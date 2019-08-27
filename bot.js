@@ -160,7 +160,7 @@ client.on('message', async message => {
             dispatch[currguild].end()
             break
         case "stop":
-            if(!dispatch[currguild]) return message.channel.send("Nothing is playing")
+            if (!dispatch[currguild]) return message.channel.send("Nothing is playing")
             await queue[currguild].forEach(element => {
                 queue[currguild].shift()
             })
@@ -168,16 +168,16 @@ client.on('message', async message => {
             break
         case "help":
             let helpembed = new Discord.RichEmbed()
-            .setAuthor(message.author.username, message.author.avatarURL)
-            .setTitle("Music Bot v3")
-            .setDescription("A music bot")
-            .addField("add", "Adds a song via url or search")
-            .addField("remove", "Removes a song by position")
-            .addField("play", "Starts playing the queue")
-            .addField("skip", "Skips the current song")
-            .addField("repeat", "Toggles repeat on or off")
-            .addField("stop", "Stops the music, clears the current queue")
-            .setColor("#FF0000")
+                .setAuthor(message.author.username, message.author.avatarURL)
+                .setTitle("Music Bot v3")
+                .setDescription("A music bot")
+                .addField("add", "Adds a song via url or search")
+                .addField("remove", "Removes a song by position")
+                .addField("play", "Starts playing the queue")
+                .addField("skip", "Skips the current song")
+                .addField("repeat", "Toggles repeat on or off")
+                .addField("stop", "Stops the music, clears the current queue")
+                .setColor("#FF0000")
             message.channel.send(helpembed)
             break
     }
