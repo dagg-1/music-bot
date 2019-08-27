@@ -55,6 +55,7 @@ client.on('message', async message => {
             if (!arguments[0]) return message.channel.send("No URL or search specified")
             if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) {
                 let result = await searchapi(tokens.YouTube.api_key, { q: arguments.join().replace(/,/gi, " "), type: "video" })
+                if(!result.items[0]) return message.channel.send("Nothing was found")
                 arguments[0] = result.items[0].id.videoId
             }
             let info = await ytdl.getBasicInfo(arguments[0])
@@ -82,6 +83,7 @@ client.on('message', async message => {
             break
         case "play":
             if (!queue[currguild][0]) return message.channel.send("Nothing is queued")
+            if (playembed[currguild]) return message.channel.send("Something is already playing")
             repeat[currguild] = false
             message.member.voiceChannel.join()
                 .then(vc => {
