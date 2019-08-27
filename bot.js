@@ -87,7 +87,7 @@ client.on('message', async message => {
                         .then(thismessage => {
                             untilEnd()
                             function untilEnd() {
-                                dispatch[currguild] = vc.playStream(ytdl(queue[currguild][0].url), { highWaterMark: 3200000 })
+                                dispatch[currguild] = vc.playStream(ytdl(queue[currguild][0].url, { highWaterMark: 32000000 }))
                                     .on('end', () => {
                                         if (repeat[currguild] == true) untilEnd()
                                         else queue[currguild].shift()
