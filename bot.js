@@ -163,9 +163,11 @@ client.on('message', async message => {
             break
         case "stop":
             if (!dispatch[currguild]) return message.channel.send("Nothing is playing")
-            await queue[currguild].forEach(element => {
-                queue[currguild].shift()
-            })
+            if (!queue[currguild][1]) {
+                await queue[currguild].forEach(element => {
+                    queue[currguild].shift()
+                })
+            }
             dispatch[currguild].end()
             break
         case "help":
