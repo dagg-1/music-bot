@@ -105,7 +105,7 @@ client.on('message', message => {
                 })
             break
         case "queue":
-            if (!queue) return message.channel.send("Nothing is queued")
+            if (!queue[0]) return message.channel.send("Nothing is queued")
             let queueembed = new Discord.RichEmbed()
                 .setAuthor(message.author.username, message.author.avatarURL)
                 .setTitle("Queue")
