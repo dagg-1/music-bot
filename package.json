@@ -1,7 +1,7 @@
 {
-  "name": "dict",
-  "version": "1.0.0",
-  "description": "dictionary bot",
+  "name": "music-bot",
+  "version": "3.0.0",
+  "description": "A music bot",
   "main": "bot.js",
   "author": "Dagg",
   "license": "MIT",
