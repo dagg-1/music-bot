@@ -4,6 +4,8 @@ const tokens = require('./tokens.json')
 const client = new Discord.Client()
 const prefix = "!"
 
+var queue = []
+
 client.login(tokens.Discord.bot_token)
 
 client.on('ready', () => {
@@ -22,6 +24,14 @@ client.on('message', message => {
             .then(async thismessage => {
                 await thismessage.react("😀")
             }) 
+            break
+
+        case "add":
+            queue.push({
+                title: `${arguments[0]}`,
+                url: `${arguments[1]}`
+            })
+            console.log(queue)
             break
     }
 })
