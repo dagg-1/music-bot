@@ -1,0 +1,11 @@
+{
+  "name": "dict",
+  "version": "1.0.0",
+  "description": "dictionary bot",
+  "main": "bot.js",
+  "author": "Dagg",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
+}
