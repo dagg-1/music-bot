@@ -52,7 +52,7 @@ client.on('message', async message => {
 
     switch (command) {
         case "add":
-            if (!arguments[0]) return message.channel.send("No URL specified")
+            if (!arguments[0]) return message.channel.send("No URL or search specified")
             if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) {
                 let result = await searchapi(tokens.YouTube.api_key, { q: arguments.join().replace(/,/gi, " "), type: "video" })
                 arguments[0] = result.items[0].id.videoId
@@ -160,16 +160,24 @@ client.on('message', async message => {
             dispatch[currguild].end()
             break
         case "stop":
+            if(!dispatch[currguild]) return message.channel.send("Nothing is playing")
             await queue[currguild].forEach(element => {
                 queue[currguild].shift()
             })
             dispatch[currguild].end()
             break
-        case "debugam":
-            console.log(queue)
-            console.log(dispatch)
-            console.log(repeat)
-            console.log(playembed)
+        case "help":
+            let helpembed = new Discord.RichEmbed()
+            .setAuthor(message.author.username, message.author.avatarURL)
+            .setTitle("Music Bot v3")
+            .setDescription("A music bot")
+            .addField("add", "Adds a song via url or search")
+            .addField("remove", "Removes a song by position")
+            .addField("play", "Starts playing the queue")
+            .addField("skip", "Skips the current song")
+            .addField("repeat", "Toggles repeat on or off")
+            .addField("stop", "Stops the music, clears the current queue")
+            message.channel.send(helpembed)
             break
     }
 })
