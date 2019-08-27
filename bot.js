@@ -6,6 +6,9 @@ const client = new Discord.Client()
 const prefix = "!"
 
 var queue = []
+var dispatch
+var repeat = false
+var playembed
 
 client.login(tokens.Discord.bot_token)
 
@@ -51,23 +54,55 @@ client.on('message', message => {
                         .then(thismessage => {
                             untilEnd()
                             function untilEnd() {
-                                vc.playStream(ytdl(queue[0].url), { highWaterMark: 3200000 })
+                                dispatch = vc.playStream(ytdl(queue[0].url), { highWaterMark: 3200000 })
                                     .on('end', () => {
-                                        queue.shift()
-                                        if(queue[0]) untilEnd()
+                                        if (repeat == true) untilEnd()
+                                        else queue.shift()
+                                        if (queue[0]) untilEnd()
                                         else vc.disconnect()
                                     })
-                                let playembed = new Discord.RichEmbed()
-                                .setAuthor(queue[0].author.name, queue[0].author.avatar, queue[0].author.url)
-                                .setTitle(queue[0].title)
-                                .setDescription(queue[0].url)
-                                .setFooter(queue[0].views)
-                                .setImage(queue[0].thumbnail)
-                                .setColor("#FF0000")
+                                playembed = new Discord.RichEmbed()
+                                    .setAuthor(queue[0].author.name, queue[0].author.avatar, queue[0].author.url)
+                                    .setTitle(queue[0].title)
+                                    .setDescription(queue[0].url)
+                                    .setFooter(queue[0].views)
+                                    .setImage(queue[0].thumbnail)
+                                    .setColor("#FF0000")
+                                if (queue[1]) playembed.addField("Up Next", queue[1].title)
                                 thismessage.edit(playembed)
                             }
                         })
                 })
+            break
+        case "pause":
+            dispatch.pause()
+            break
+        case "resume":
+            dispatch.resume()
+            break
+        case "repeat":
+            repeat = !repeat
+            if (repeat == true) message.channel.send("Repeating")
+            else message.channel.send("Not repeating")
+            break
+        case "np":
+            message.channel.send(playembed)
+                .then(thismessage => {
+                    dispatch.on('end', () => {
+                        thismessage.edit(playembed)
+                    })
+                })
+            break
+        case "queue":
+            let queueembed = new Discord.RichEmbed()
+            .setAuthor(message.author.username, message.author.avatarURL)
+            .setTitle("Queue")
+            let forelement = 0
+            queue.forEach(element => {
+                forelement++
+                queueembed.addField(`Position ${forelement}`, element.title)
+            })
+            message.channel.send(queue)
             break
     }
 })
