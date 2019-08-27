@@ -6,6 +6,8 @@
   "author": "Dagg",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "discord.js": "^11.5.1",
+    "opusscript": "0.0.7",
+    "ytdl-core": "^0.29.5"
   }
 }
