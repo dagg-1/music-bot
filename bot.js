@@ -177,6 +177,7 @@ client.on('message', async message => {
             .addField("skip", "Skips the current song")
             .addField("repeat", "Toggles repeat on or off")
             .addField("stop", "Stops the music, clears the current queue")
+            .setColor("#FF0000")
             message.channel.send(helpembed)
             break
     }
