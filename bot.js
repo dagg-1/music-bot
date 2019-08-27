@@ -68,6 +68,7 @@ client.on('message', async message => {
                                         else {
                                             vc.disconnect()
                                             dispatch = ''
+                                            playembed = ''
                                         }
                                     })
                                 playembed = new Discord.RichEmbed()
