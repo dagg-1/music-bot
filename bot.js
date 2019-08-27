@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const tokens = require('./tokens.json')
 const ytdl = require('ytdl-core')
+const searchapi = require('youtube-api-v3-search')
 
 const client = new Discord.Client()
 const prefix = "!"
@@ -16,7 +17,7 @@ client.on('ready', () => {
     console.log(`Logged in as "${client.user.username}#${client.user.discriminator}"`)
 })
 
-client.on('message', message => {
+client.on('message', async message => {
     if (!message.guild) return
     if (!message.content.startsWith(prefix)) return
     const arguments = message.content.slice(prefix.length).trim().split(/ +/g)
@@ -25,29 +26,30 @@ client.on('message', message => {
     switch (command) {
         case "add":
             if (!arguments[0]) return message.channel.send("No URL specified")
-            if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) return message.channel.send("Invalid URL")
-            ytdl.getBasicInfo(arguments[0])
-                .then(info => {
-                    queue.push({
-                        title: `${info.title}`,
-                        url: `${info.video_url}`,
-                        views: `${info.player_response.videoDetails.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} views`,
-                        thumbnail: `${info.player_response.videoDetails.thumbnail.thumbnails[3].url}`,
-                        author: {
-                            name: `${info.author.name}`,
-                            avatar: `${info.author.avatar}`,
-                            url: `${info.author.channel_url}`
-                        }
-                    })
-                    let addembed = new Discord.RichEmbed()
-                        .setTitle(`Added To Queue: ${queue[queue.length - 1].title}`)
-                        .setDescription(queue[queue.length - 1].url)
-                        .setAuthor(queue[queue.length - 1].author.name, queue[queue.length - 1].author.avatar, queue[queue.length - 1].author.url)
-                        .setColor("#FF0000")
-                        .setImage(queue[queue.length - 1].thumbnail)
-                        .setFooter(queue[queue.length - 1].views)
-                    message.channel.send(addembed)
-                })
+            if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) {
+                let result = await searchapi(tokens.YouTube.api_key, {q: arguments.join().replace(/,/gi, " "), type: "video"})
+                arguments[0] = result.items[0].id.videoId
+            }
+            let info = await ytdl.getBasicInfo(arguments[0])
+            queue.push({
+                title: `${info.title}`,
+                url: `${info.video_url}`,
+                views: `${info.player_response.videoDetails.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} views`,
+                thumbnail: `${info.player_response.videoDetails.thumbnail.thumbnails[3].url}`,
+                author: {
+                    name: `${info.author.name}`,
+                    avatar: `${info.author.avatar}`,
+                    url: `${info.author.channel_url}`
+                }
+            })
+            let addembed = new Discord.RichEmbed()
+                .setTitle(`Added To Queue: ${queue[queue.length - 1].title}`)
+                .setDescription(queue[queue.length - 1].url)
+                .setAuthor(queue[queue.length - 1].author.name, queue[queue.length - 1].author.avatar, queue[queue.length - 1].author.url)
+                .setColor("#FF0000")
+                .setImage(queue[queue.length - 1].thumbnail)
+                .setFooter(queue[queue.length - 1].views)
+            message.channel.send(addembed)
             break
         case "play":
             if (!queue[0]) return message.channel.send("Nothing is queued")
