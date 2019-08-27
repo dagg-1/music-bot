@@ -97,12 +97,13 @@ client.on('message', message => {
             let queueembed = new Discord.RichEmbed()
             .setAuthor(message.author.username, message.author.avatarURL)
             .setTitle("Queue")
+            .setColor("#FF0000")
             let forelement = 0
             queue.forEach(element => {
                 forelement++
                 queueembed.addField(`Position ${forelement}`, element.title)
             })
-            message.channel.send(queue)
+            message.channel.send(queueembed)
             break
     }
 })
