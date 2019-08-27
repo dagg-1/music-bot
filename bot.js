@@ -26,6 +26,23 @@ client.on('ready', () => {
     })
 })
 
+client.on('guildDelete', guild => {
+    queue[guild.id] = []
+    dispatch[guild.id] = []
+    repeat[guild] = ""
+    playembed[guild] = ""
+})
+
+client.on('guildCreate', guild => {
+    queue.push(guild.id)
+    queue[guild.id] = []
+    dispatch.push(guild.id)
+    repeat.push(guild.id)
+    repeat[guild.id] = false
+    playembed.push(guild.id)
+    playembed[guild.id] = ""
+})
+
 client.on('message', async message => {
     if (!message.guild) return
     if (!message.content.startsWith(prefix)) return
