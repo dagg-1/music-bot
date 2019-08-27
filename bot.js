@@ -45,15 +45,19 @@ client.on('message', message => {
             break
         case "play":
             message.member.voiceChannel.join()
-                .then(channel => {
-                    untilEnd()
-                    function untilEnd() {
-                        channel.playStream(ytdl(queue[0]))
-                            .on('end', channel => {
-                                queue.shift()
-                                untilEnd()
-                            })
-                    }
+                .then(vc => {
+                    message.channel.send("Starting")
+                        .then(thismessage => {
+                            untilEnd()
+                            function untilEnd() {
+                                vc.playStream(ytdl(queue[0].url), { highWaterMark: 3200000 })
+                                    .on('end', () => {
+                                        queue.shift()
+                                        if(queue[0]) untilEnd()
+                                    })
+                                thismessage.edit("test edit")
+                            }
+                        })
                 })
             break
     }
