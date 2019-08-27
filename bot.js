@@ -58,15 +58,17 @@ client.on('message', async message => {
                 arguments[0] = result.items[0].id.videoId
             }
             let info = await ytdl.getBasicInfo(arguments[0])
+            let videoDetails = info.player_response.videoDetails
+            let author = info.author
             queue[currguild].push({
                 title: info.title,
                 url: info.video_url,
-                views: `${parseInt(info.player_response.videoDetails.viewCount).toLocaleString('en')} views`,
-                thumbnail: info.player_response.videoDetails.thumbnail.thumbnails[3].url,
+                views: `${parseInt(videoDetails.viewCount).toLocaleString('en')} views`,
+                thumbnail: videoDetails.thumbnail.thumbnails[3].url,
                 author: {
-                    name: info.author.name,
-                    avatar: info.author.avatar,
-                    url: info.author.channel_url
+                    name: author.name,
+                    avatar: author.avatar,
+                    url: author.channel_url
                 }
             })
             let addembed = new Discord.RichEmbed()
