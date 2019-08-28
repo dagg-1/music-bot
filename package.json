@@ -5,6 +5,9 @@
   "main": "bot.js",
   "author": "Dagg",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/dagg-1/music-bot"
+  },
   "dependencies": {
     "discord.js": "^11.5.1",
     "opusscript": "0.0.7",
