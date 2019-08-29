@@ -63,6 +63,7 @@ client.on('message', async message => {
             message.channel.send(addembed)
             break
         case "play":
+            if(!message.member.voiceChannel) return message.channel.send("You are not in a voice channel")
             if (!queue[currguild][0]) {
                 if (arguments[0]) await getinfo(arguments, currguild, message)
                 if (!queue[currguild][0].url) return
