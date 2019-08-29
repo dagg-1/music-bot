@@ -174,6 +174,8 @@ client.on('message', async message => {
                 .addField(prefix[currguild] + "skip", "Skips the current song")
                 .addField(prefix[currguild] + "repeat", "Toggles repeat on or off")
                 .addField(prefix[currguild] + "stop", "Stops the music, clears the current queue")
+                .addField(prefix[currguild] + "volume", "Controls the volume [0.1 - 1.0]")
+                .addField(prefix[currguild] + "prefix", "Sets the prefix")
                 .setColor("#FF0000")
             message.channel.send(helpembed)
             break

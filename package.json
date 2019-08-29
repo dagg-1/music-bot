@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "discord.js": "^11.5.1",
-    "opusscript": "0.0.7",
+    "node-opus": "^0.3.2",
     "youtube-api-v3-search": "^1.2.1",
     "ytdl-core": "^0.29.5"
   }
