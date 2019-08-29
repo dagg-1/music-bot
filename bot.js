@@ -52,27 +52,7 @@ client.on('message', async message => {
 
     switch (command) {
         case "add":
-            if (!arguments[0]) return message.channel.send("No URL or search specified")
-            if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) {
-                let result = await searchapi(tokens.YouTube.api_key, { q: arguments.join().replace(/,/gi, " "), type: "video" })
-                if(!result.items[0]) return message.channel.send("Nothing was found")
-                arguments[0] = result.items[0].id.videoId
-            }
-            let info = await ytdl.getBasicInfo(arguments[0])
-            let videoDetails = info.player_response.videoDetails
-            let thumbnailarr = videoDetails.thumbnail.thumbnails
-            let author = info.author
-            queue[currguild].push({
-                title: info.title,
-                url: info.video_url,
-                views: `${parseInt(videoDetails.viewCount).toLocaleString('en')} views`,
-                thumbnail: thumbnailarr[thumbnailarr.length - 1].url,
-                author: {
-                    name: author.name,
-                    avatar: author.avatar,
-                    url: author.channel_url
-                }
-            })
+            await getinfo(arguments, currguild, message)
             let addembed = new Discord.RichEmbed()
                 .setTitle(`Added To Queue: ${queue[currguild][queue[currguild].length - 1].title}`)
                 .setDescription(queue[currguild][queue[currguild].length - 1].url)
@@ -83,7 +63,10 @@ client.on('message', async message => {
             message.channel.send(addembed)
             break
         case "play":
-            if (!queue[currguild][0]) return message.channel.send("Nothing is queued")
+            if (!queue[currguild][0]) {
+                if (arguments[0]) await getinfo(arguments, currguild, message)
+                if (!queue[currguild][0].url) return
+            }
             if (playembed[currguild]) return message.channel.send("Something is already playing")
             repeat[currguild] = false
             message.member.voiceChannel.join()
@@ -180,7 +163,7 @@ client.on('message', async message => {
                 .setDescription("A music bot")
                 .addField("add", "Adds a song via url or search")
                 .addField("remove", "Removes a song by position")
-                .addField("play", "Starts playing the queue")
+                .addField("play", "Starts playing the queue, adds a song if a search is passed")
                 .addField("skip", "Skips the current song")
                 .addField("repeat", "Toggles repeat on or off")
                 .addField("stop", "Stops the music, clears the current queue")
@@ -189,3 +172,28 @@ client.on('message', async message => {
             break
     }
 })
+
+async function getinfo(arguments, currguild, message) {
+    if (!arguments[0]) return message.channel.send("No URL or search specified")
+    if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) {
+        let result = await searchapi(tokens.YouTube.api_key, { q: arguments.join().replace(/,/gi, " "), type: "video" })
+        if (!result.items[0]) return message.channel.send("Nothing was found")
+        arguments[0] = result.items[0].id.videoId
+    }
+    let info = await ytdl.getBasicInfo(arguments[0])
+    let videoDetails = info.player_response.videoDetails
+    let thumbnailarr = videoDetails.thumbnail.thumbnails
+    let author = info.author
+    queue[currguild].push({
+        title: info.title,
+        url: info.video_url,
+        views: `${parseInt(videoDetails.viewCount).toLocaleString('en')} views`,
+        thumbnail: thumbnailarr[thumbnailarr.length - 1].url,
+        author: {
+            name: author.name,
+            avatar: author.avatar,
+            url: author.channel_url
+        }
+    })
+    return
+}
