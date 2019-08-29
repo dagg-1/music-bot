@@ -60,12 +60,13 @@ client.on('message', async message => {
             }
             let info = await ytdl.getBasicInfo(arguments[0])
             let videoDetails = info.player_response.videoDetails
+            let thumbnailarr = videoDetails.thumbnail.thumbnails
             let author = info.author
             queue[currguild].push({
                 title: info.title,
                 url: info.video_url,
                 views: `${parseInt(videoDetails.viewCount).toLocaleString('en')} views`,
-                thumbnail: videoDetails.thumbnail.thumbnails[3].url,
+                thumbnail: thumbnailarr[thumbnailarr.length - 1].url,
                 author: {
                     name: author.name,
                     avatar: author.avatar,
