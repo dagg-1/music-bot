@@ -171,6 +171,13 @@ client.on('message', async message => {
                 .setColor("#FF0000")
             message.channel.send(helpembed)
             break
+        case "volume":
+                if (!dispatch[currguild]) return message.channel.send("Nothing is playing")
+                if (!arguments[0]) return message.channel.send(`Current Volume: ${dispatch[currguild].volume}`)
+                if (arguments[0] > 1.0) return message.channel.send("Too high!")
+                if (arguments[0] <= 0.0) return message.channel.send("Too low!")
+                dispatch[currguild].setVolume(arguments[0])
+            break
     }
 })
 
