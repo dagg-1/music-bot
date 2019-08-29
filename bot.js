@@ -4,7 +4,7 @@ const ytdl = require('ytdl-core')
 const searchapi = require('youtube-api-v3-search')
 
 const client = new Discord.Client()
-const prefix = "!"
+const prefix = []
 
 var queue = []
 var dispatch = []
@@ -25,14 +25,16 @@ client.on('ready', () => {
         repeat[guild.id] = false
         playembed.push(guild.id)
         playembed[guild.id] = ""
+        prefix[guild.id] = "!"
     })
 })
 
 client.on('guildDelete', guild => {
-    queue[guild.id] = []
-    dispatch[guild.id] = []
-    repeat[guild] = ""
-    playembed[guild] = ""
+    queue.splice(queue.indexOf(guild.id), 1)
+    dispatch.splice(dispatch.indexOf(guild.id), 1)
+    repeat.splice(repeat.indexOf(guild.id), 1)
+    playembed.splice(playembed.indexOf(guild.id), 1)
+    prefix.splice(prefix.indexOf(guild.id), 1)
 })
 
 client.on('guildCreate', guild => {
@@ -43,14 +45,15 @@ client.on('guildCreate', guild => {
     repeat[guild.id] = false
     playembed.push(guild.id)
     playembed[guild.id] = ""
+    prefix[guild.id] = "!"
 })
 
 client.on('message', async message => {
     if (!message.guild) return
-    if (!message.content.startsWith(prefix)) return
-    const arguments = message.content.slice(prefix.length).trim().split(/ +/g)
-    const command = arguments.shift().toLowerCase()
     const currguild = message.member.guild.id
+    if (!message.content.startsWith(prefix[currguild])) return
+    const arguments = message.content.slice(prefix[currguild].length).trim().split(/ +/g)
+    const command = arguments.shift().toLowerCase()
 
     switch (command) {
         case "add":
@@ -165,12 +168,12 @@ client.on('message', async message => {
                 .setAuthor(message.author.username, message.author.avatarURL)
                 .setTitle("Music Bot v3")
                 .setDescription("A music bot")
-                .addField("add", "Adds a song via url or search")
-                .addField("remove", "Removes a song by position")
-                .addField("play", "Starts playing the queue, adds a song if a search is passed")
-                .addField("skip", "Skips the current song")
-                .addField("repeat", "Toggles repeat on or off")
-                .addField("stop", "Stops the music, clears the current queue")
+                .addField(prefix[currguild] + "add", "Adds a song via url or search")
+                .addField(prefix[currguild] + "remove", "Removes a song by position")
+                .addField(prefix[currguild] + "play", "Starts playing the queue, adds a song if a search is passed")
+                .addField(prefix[currguild] + "skip", "Skips the current song")
+                .addField(prefix[currguild] + "repeat", "Toggles repeat on or off")
+                .addField(prefix[currguild] + "stop", "Stops the music, clears the current queue")
                 .setColor("#FF0000")
             message.channel.send(helpembed)
             break
@@ -181,6 +184,11 @@ client.on('message', async message => {
                 if (arguments[0] <= 0.0) return message.channel.send("Too low!")
                 volume = arguments[0]
                 dispatch[currguild].setVolume(arguments[0])
+            break
+        case "prefix":
+            if (!arguments[0]) return message.channel.send(`Server Prefix: ${prefix[currguild]}`)
+            prefix[currguild] = arguments[0]
+            message.channel.send(`The new prefix is: ${prefix[currguild]}`)
             break
     }
 })
