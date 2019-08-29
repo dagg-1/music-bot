@@ -83,13 +83,13 @@ client.on('message', async message => {
                 .then(vc => {
                     message.channel.send("Loading")
                         .then(thismessage => {
-                            untilEnd()
-                            function untilEnd() {
+                            playuntilEndQ()
+                            function playuntilEndQ() {
                                 dispatch[currguild] = vc.playStream(ytdl(queue[currguild][0].url, { highWaterMark: 32000000 }))
                                     .on('end', () => {
-                                        if (repeat[currguild] == true) untilEnd()
+                                        if (repeat[currguild] == true) return playuntilEndQ()
                                         else queue[currguild].shift()
-                                        if (queue[currguild][0]) untilEnd()
+                                        if (queue[currguild][0]) playuntilEndQ()
                                         else {
                                             vc.disconnect()
                                             dispatch[currguild] = ''
@@ -221,5 +221,4 @@ async function getinfo(arguments, currguild, message) {
             url: author.channel_url
         }
     })
-    return
 }
