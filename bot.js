@@ -10,8 +10,7 @@ var queue = []
 var dispatch = []
 var repeat = []
 var playembed = []
-
-let volume = 1
+var volume = []
 
 client.login(tokens.Discord.bot_token)
 
@@ -26,6 +25,8 @@ client.on('ready', () => {
         playembed.push(guild.id)
         playembed[guild.id] = ""
         prefix[guild.id] = "!"
+        volume.push(guild.id)
+        volume[guild.id] = 1
     })
 })
 
@@ -35,6 +36,7 @@ client.on('guildDelete', guild => {
     repeat.splice(repeat.indexOf(guild.id), 1)
     playembed.splice(playembed.indexOf(guild.id), 1)
     prefix.splice(prefix.indexOf(guild.id), 1)
+    volume.splice(volume.indexOf(guild.id), 1)
 })
 
 client.on('guildCreate', guild => {
@@ -46,6 +48,8 @@ client.on('guildCreate', guild => {
     playembed.push(guild.id)
     playembed[guild.id] = ""
     prefix[guild.id] = "!"
+    volume.push(guild.id)
+    volume[guild.id] = 1
 })
 
 client.on('message', async message => {
@@ -68,7 +72,7 @@ client.on('message', async message => {
             message.channel.send(addembed)
             break
         case "play":
-            if(!message.member.voiceChannel) return message.channel.send("You are not in a voice channel")
+            if (!message.member.voiceChannel) return message.channel.send("You are not in a voice channel")
             if (!queue[currguild][0]) {
                 if (arguments[0]) await getinfo(arguments, currguild, message)
                 if (!queue[currguild][0].url) return
@@ -92,7 +96,7 @@ client.on('message', async message => {
                                             playembed[currguild] = ''
                                         }
                                     })
-                                dispatch[currguild].setVolume(volume)
+                                dispatch[currguild].setVolume(volume[currguild])
                                 playembed[currguild] = new Discord.RichEmbed()
                                     .setAuthor(queue[currguild][0].author.name, queue[currguild][0].author.avatar, queue[currguild][0].author.url)
                                     .setTitle(queue[currguild][0].title)
@@ -180,12 +184,12 @@ client.on('message', async message => {
             message.channel.send(helpembed)
             break
         case "volume":
-                if (!dispatch[currguild]) return message.channel.send("Nothing is playing")
-                if (!arguments[0]) return message.channel.send(`Current Volume: ${dispatch[currguild].volume}`)
-                if (arguments[0] > 1.0) return message.channel.send("Too high!")
-                if (arguments[0] <= 0.0) return message.channel.send("Too low!")
-                volume = arguments[0]
-                dispatch[currguild].setVolume(arguments[0])
+            if (!dispatch[currguild]) return message.channel.send("Nothing is playing")
+            if (!arguments[0]) return message.channel.send(`Current Volume: ${dispatch[currguild].volume}`)
+            if (arguments[0] > 1.0) return message.channel.send("Too high!")
+            if (arguments[0] <= 0.0) return message.channel.send("Too low!")
+            volume[currguild] = arguments[0]
+            dispatch[currguild].setVolume(arguments[0])
             break
         case "prefix":
             if (!arguments[0]) return message.channel.send(`Server Prefix: ${prefix[currguild]}`)
