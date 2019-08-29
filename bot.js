@@ -11,6 +11,8 @@ var dispatch = []
 var repeat = []
 var playembed = []
 
+let volume = 1
+
 client.login(tokens.Discord.bot_token)
 
 client.on('ready', () => {
@@ -87,6 +89,7 @@ client.on('message', async message => {
                                             playembed[currguild] = ''
                                         }
                                     })
+                                dispatch[currguild].setVolume(volume)
                                 playembed[currguild] = new Discord.RichEmbed()
                                     .setAuthor(queue[currguild][0].author.name, queue[currguild][0].author.avatar, queue[currguild][0].author.url)
                                     .setTitle(queue[currguild][0].title)
@@ -176,6 +179,7 @@ client.on('message', async message => {
                 if (!arguments[0]) return message.channel.send(`Current Volume: ${dispatch[currguild].volume}`)
                 if (arguments[0] > 1.0) return message.channel.send("Too high!")
                 if (arguments[0] <= 0.0) return message.channel.send("Too low!")
+                volume = arguments[0]
                 dispatch[currguild].setVolume(arguments[0])
             break
     }
