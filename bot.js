@@ -156,6 +156,7 @@ client.on('message', async message => {
         case "skip":
             if (!dispatch[currguild]) return message.channel.send("Nothing is playing")
             if (!queue[currguild][1]) return message.channel.send("Nothing else is queued")
+            repeat[currguild] = false
             dispatch[currguild].end()
             break
         case "stop":
