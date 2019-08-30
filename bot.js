@@ -11,6 +11,7 @@ var dispatch = []
 var repeat = []
 var playembed = []
 var volume = []
+var errorstate = []
 
 client.login(tokens.Discord.bot_token)
 
@@ -27,6 +28,8 @@ client.on('ready', () => {
         prefix[guild.id] = "!"
         volume.push(guild.id)
         volume[guild.id] = 1
+        errorstate.push(guild.id)
+        errorstate[guild.id] = false
     })
 })
 
@@ -37,6 +40,7 @@ client.on('guildDelete', guild => {
     playembed.splice(playembed.indexOf(guild.id), 1)
     prefix.splice(prefix.indexOf(guild.id), 1)
     volume.splice(volume.indexOf(guild.id), 1)
+    errorstate.splice(errorstate.indexOf(guild.id), 1)
 })
 
 client.on('guildCreate', guild => {
@@ -50,6 +54,8 @@ client.on('guildCreate', guild => {
     prefix[guild.id] = "!"
     volume.push(guild.id)
     volume[guild.id] = 1
+    errorstate.push(guild.id)
+    errorstate[guild.id] = false
 })
 
 client.on('message', async message => {
@@ -73,10 +79,11 @@ client.on('message', async message => {
             break
         case "play":
             if (!message.member.voiceChannel) return message.channel.send("You are not in a voice channel")
-            if (!queue[currguild][0]) {
-                if (arguments[0]) await getinfo(arguments, currguild, message)
-                if (!queue[currguild][0].url) return
+            if (arguments[0]) {
+                await getinfo(arguments, currguild, message)
+                if (errorstate[currguild] == true) return 
             }
+            if (!queue[currguild][0]) return message.channel.send("There's nothing queued")
             if (playembed[currguild]) return message.channel.send("Something is already playing")
             repeat[currguild] = false
             message.member.voiceChannel.join()
@@ -201,10 +208,14 @@ client.on('message', async message => {
 })
 
 async function getinfo(arguments, currguild, message) {
+    errorstate[currguild] = false
     if (!arguments[0]) return message.channel.send("No URL or search specified")
     if (!arguments[0].includes("https://youtu.be/") && !arguments[0].includes("https://www.youtube.com/watch?v=")) {
         let result = await searchapi(tokens.YouTube.api_key, { q: arguments.join().replace(/,/gi, " "), type: "video" })
-        if (!result.items[0]) return message.channel.send("Nothing was found")
+        if (!result.items[0]) {
+            errorstate[currguild] = true
+            return message.channel.send("Nothing was found")
+        }
         arguments[0] = result.items[0].id.videoId
     }
     let info = await ytdl.getBasicInfo(arguments[0])
